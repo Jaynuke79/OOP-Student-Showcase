@@ -1,5 +1,10 @@
 # ChessPiece class
 class ChessPiece:
+    """
+    Base/parent class for Chess Pieces
+    Each unique piece will inherit from this class
+    """
+
     def __init__(self, name: str, color: str, row: int, col: int, 
                  unit_count_limit: int, movement_count: int, movement_style: str):
         self._name = name
@@ -26,3 +31,57 @@ class ChessPiece:
     def reduce_frozen(self):
         if self._frozen_turns > 0:
             self._frozen_turns -= 1
+
+class Pawn(ChessPiece):
+    """
+    Class for Pawn pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
+
+class Queen(ChessPiece):
+    """
+    Class for Queen pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
+
+class King(ChessPiece):
+    """
+    Class for King pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
+
+class Bishop(ChessPiece):
+    """
+    Class for Bishop pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
+
+class Knight(ChessPiece):
+    """
+    Class for Knight pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
+
+class Rook(ChessPiece):
+    """
+    Class for Rook pieces
+    """
+    def __init__(self, name: str, color: str, row: int, col: int, 
+                 unit_count_limit: int, movement_count: int, movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit, 
+                         movement_count, movement_style)
