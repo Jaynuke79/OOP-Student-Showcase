@@ -1,6 +1,7 @@
 # Re-imports and setup after kernel reset
 import pygame
 import random
+import chess_piece
 
 # Initialize pygame
 pygame.init()
@@ -25,23 +26,23 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess Party")
 
 # Data model
-class ChessPiece:
-    def __init__(self, name, color, row, col):
-        self.name = name
-        self.color = color
-        self.row = row
-        self.col = col
-        self.frozen_turns = 0
+# class ChessPiece:
+#     def __init__(self, name, color, row, col):
+#         self.name = name
+#         self.color = color
+#         self.row = row
+#         self.col = col
+#         self.frozen_turns = 0
 
-    def is_frozen(self):
-        return self.frozen_turns > 0
+#     def is_frozen(self):
+#         return self.frozen_turns > 0
 
-    def freeze(self, turns=1):
-        self.frozen_turns += turns
+#     def freeze(self, turns=1):
+#         self.frozen_turns += turns
 
-    def reduce_freeze(self):
-        if self.frozen_turns > 0:
-            self.frozen_turns -= 1
+#     def reduce_freeze(self):
+#         if self.frozen_turns > 0:
+#             self.frozen_turns -= 1
 
 class FreezePieceEvent:
     def apply(self, piece):
@@ -54,7 +55,40 @@ class PromoteToQueenEvent:
         return f"A piece is promoted to Queen!"
 
 # Setup board and pieces
-pieces = [ChessPiece("Pawn", "White", 1, 0), ChessPiece("Bishop", "Black", 6, 7)]
+# First number: Row
+# Second number: Column
+# (1, 0) = Row 1, Column 0
+pieces = [ChessPiece("Pawn", "White", 1, 0),
+          ChessPiece("Pawn", "White", 1, 1), 
+          ChessPiece("Pawn", "White", 1, 2), 
+          ChessPiece("Pawn", "White", 1, 3), 
+          ChessPiece("Pawn", "White", 1, 4), 
+          ChessPiece("Pawn", "White", 1, 5), 
+          ChessPiece("Pawn", "White", 1, 6), 
+          ChessPiece("Pawn", "White", 1, 7),
+
+
+          ChessPiece("Pawn", "Black", 6, 0),
+          ChessPiece("Pawn", "Black", 6, 1), 
+          ChessPiece("Pawn", "Black", 6, 2), 
+          ChessPiece("Pawn", "Black", 6, 3), 
+          ChessPiece("Pawn", "Black", 6, 4), 
+          ChessPiece("Pawn", "Black", 6, 5), 
+          ChessPiece("Pawn", "Black", 6, 6), 
+          ChessPiece("Pawn", "Black", 6, 7),  
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+        #   ChessPiece("Bishop", "Black", 6, 7),
+
+          ]
 events = [FreezePieceEvent(), PromoteToQueenEvent()]
 event_log = []
 
