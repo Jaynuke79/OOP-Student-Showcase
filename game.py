@@ -6,7 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'event_classes'))
 # Re-imports and setup after kernel reset
 import pygame
 import random
-from chess_piece import ChessPiece
+from chess_piece import ChessPiece, Pawn, Rook, Knight
+from chess_piece import Bishop, King, Queen
 from promote_to_queen import PromoteToQueenEvent
 from freeze_piece import FreezePieceEvent
 
@@ -35,81 +36,49 @@ RED = (255, 50, 50)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess Party")
 
-# Data model
-# class ChessPiece:
-#     def __init__(self, name, color, row, col):
-#         self.name = name
-#         self.color = color
-#         self.row = row
-#         self.col = col
-#         self.frozen_turns = 0
 
-#     def is_frozen(self):
-#         return self.frozen_turns > 0
+pieces = [Pawn("Pawn", "White", 1, 0, 8, 1, "forward"),
+          Pawn("Pawn", "White", 1, 1, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 2, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 3, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 4, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 5, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 6, 8, 1, "forward"), 
+          Pawn("Pawn", "White", 1, 7, 8, 1, "forward"),
 
-#     def freeze(self, turns=1):
-#         self.frozen_turns += turns
+          Rook("Rook", "White", 0, 0, 2, 8, "line"),
+          Rook("Rook", "White", 0, 7, 2, 8, "line"),
 
-#     def reduce_freeze(self):
-#         if self.frozen_turns > 0:
-#             self.frozen_turns -= 1
+          Knight("Knight", "White", 0, 1, 2, 5, "L"),
+          Knight("Knight", "White", 0, 6, 2, 5, "L"),
 
-# class FreezePieceEvent:
-#     def apply(self, piece):
-#         piece.freeze(1)
-#         return f"{piece._name} is frozen!"
+          Bishop("Bishop", "White", 0, 2, 2, 8, "diagonal"),
+          Bishop("Bishop", "White", 0, 5, 2, 8, "diagonal"),
 
-# class PromoteToQueenEvent:
-#     def apply(self, piece):
-#         piece._name = "Queen"
-#         return f"A piece is promoted to Queen!"
-
-# Setup board and pieces
-# First number: Row
-# Second number: Column
-# (1, 0) = Row 1, Column 0
-pieces = [ChessPiece("Pawn", "White", 1, 0, 8, 1, "forward"),
-          ChessPiece("Pawn", "White", 1, 1, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 2, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 3, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 4, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 5, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 6, 8, 1, "forward"), 
-          ChessPiece("Pawn", "White", 1, 7, 8, 1, "forward"),
-
-          ChessPiece("Rook", "White", 0, 0, 2, 8, "line"),
-          ChessPiece("Rook", "White", 0, 7, 2, 8, "line"),
-
-          ChessPiece("Knight", "White", 0, 1, 2, 5, "L"),
-          ChessPiece("Knight", "White", 0, 6, 2, 5, "L"),
-
-          ChessPiece("Bishop", "White", 0, 2, 2, 8, "diagonal"),
-          ChessPiece("Bishop", "White", 0, 5, 2, 8, "diagonal"),
-
-          ChessPiece("King", "White", 0, 4, 1, 1, "any"),
-          ChessPiece("Queen", "White", 0, 3, 1, 8, "any"),
+          King("King", "White", 0, 4, 1, 1, "any"),
+          Queen("Queen", "White", 0, 3, 1, 8, "any"),
 
 
-          ChessPiece("Pawn", "Black", 6, 0, 8, 1, "forward"),
-          ChessPiece("Pawn", "Black", 6, 1, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 2, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 3, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 4, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 5, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 6, 8, 1, "forward"), 
-          ChessPiece("Pawn", "Black", 6, 7, 8, 1, "forward"),
+          Pawn("Pawn", "Black", 6, 0, 8, 1, "forward"),
+          Pawn("Pawn", "Black", 6, 1, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 2, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 3, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 4, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 5, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 6, 8, 1, "forward"), 
+          Pawn("Pawn", "Black", 6, 7, 8, 1, "forward"),
 
-          ChessPiece("Rook", "Black", 7, 0, 2, 8, "line"),
-          ChessPiece("Rook", "Black", 7, 7, 2, 8, "line"),
+          Rook("Rook", "Black", 7, 0, 2, 8, "line"),
+          Rook("Rook", "Black", 7, 7, 2, 8, "line"),
 
-          ChessPiece("Knight", "Black", 7, 1, 2, 5, "L"),
-          ChessPiece("Knight", "Black", 7, 6, 2, 5, "L"),
+          Knight("Knight", "Black", 7, 1, 2, 5, "L"),
+          Knight("Knight", "Black", 7, 6, 2, 5, "L"),
 
-          ChessPiece("Bishop", "Black", 7, 2, 2, 8, "diagonal"),
-          ChessPiece("Bishop", "Black", 7, 5, 2, 8, "diagonal"),
+          Bishop("Bishop", "Black", 7, 2, 2, 8, "diagonal"),
+          Bishop("Bishop", "Black", 7, 5, 2, 8, "diagonal"),
 
-          ChessPiece("King", "Black", 7, 4, 1, 1, "any"),
-          ChessPiece("Queen", "Black", 7, 3, 1, 8, "any"),
+          King("King", "Black", 7, 4, 1, 1, "any"),
+          Queen("Queen", "Black", 7, 3, 1, 8, "any"),
           ]
 
 piece_images = { ("Pawn", "White"): pygame.image.load("assets/pieces/whitePawn.png"),
@@ -175,19 +144,36 @@ def draw_log():
 
 def play_turn():
     messages = []
+
+
+    # Randomly select non-frozen piece
+    movable_pieces = [p for p in pieces if not p.is_frozen()]
+    if not movable_pieces:
+        messages.append("All pieces are frozen!")
+        return messages
+
+    selected_piece = random.choice(movable_pieces)
+
+    # Reduce frozen turns by 1
     for piece in pieces:
         if piece.is_frozen():
             piece.reduce_frozen()
             messages.append(f"{piece._name} is frozen.")
 
-        else:
-            if random.random() < 0.5:
-                event = random.choice(events)
-                result = event.apply(piece)
-                messages.append(result)
-            else:
-                messages.append(f"{piece._name} moves normally.")
+        
+    if random.random() < 0.5:
+        event = random.choice(events)
 
+        if isinstance(event, PromoteToQueenEvent):
+            result = event.apply(selected_piece, pieces)
+        else:
+            result = event.apply(selected_piece)
+        
+        messages.append(result)
+
+    else:
+        messages.append(f"{piece._name} moves normally.")
+    
     return messages
 
 # Main game loop
