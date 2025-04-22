@@ -3,7 +3,7 @@ from chess_piece import ChessPiece
 
 class PromoteToQueenEvent(RandomEvent):
 
-    def __init__(self, unit_count: int):
+    def __init__(self):
         self._queen_limit = 4
 
     def apply(self, piece: ChessPiece):

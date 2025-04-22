@@ -112,23 +112,23 @@ pieces = [ChessPiece("Pawn", "White", 1, 0, 8, 1, "forward"),
           ChessPiece("Queen", "Black", 7, 3, 1, 8, "any"),
           ]
 
-piece_images = { ("Pawn", "White"): pygame.image.load("assets/whitePawn_.png"),
-                 ("Pawn", "Black"): pygame.image.load("assets/blackPawn_.png"),
+piece_images = { ("Pawn", "White"): pygame.image.load("assets/pieces/whitePawn.png"),
+                 ("Pawn", "Black"): pygame.image.load("assets/pieces/blackPawn.png"),
 
-                 ("Rook", "White"): pygame.image.load("assets/_rook.png"),
-                 ("Rook", "Black"): pygame.image.load("assets/_rook_black.png"),
+                 ("Rook", "White"): pygame.image.load("assets/pieces/whiteRook.png"),
+                 ("Rook", "Black"): pygame.image.load("assets/pieces/blackRook.png"),
 
-                 ("Knight", "White"): pygame.image.load("assets/_knight_white.png"),
-                 ("Knight", "Black"): pygame.image.load("assets/_knight_black.png"),
+                 ("Knight", "White"): pygame.image.load("assets/pieces/whiteKnight.png"),
+                 ("Knight", "Black"): pygame.image.load("assets/pieces/blackKnight.png"),
 
-                 ("King", "White"): pygame.image.load("assets/_king_white.png"),
-                 ("King", "Black"): pygame.image.load("assets/_king_black.png"),
+                 ("King", "White"): pygame.image.load("assets/pieces/whiteKing.png"),
+                 ("King", "Black"): pygame.image.load("assets/pieces/blackKing.png"),
 
-                 ("Queen", "White"): pygame.image.load("assets/_queen_white.png"),
-                 ("Queen", "Black"): pygame.image.load("assets/_queen_black.png"),
+                 ("Queen", "White"): pygame.image.load("assets/pieces/whiteQueen.png"),
+                 ("Queen", "Black"): pygame.image.load("assets/pieces/blackQueen.png"),
 
-                 ("Bishop", "White"): pygame.image.load("assets/_bishop_white.png"),
-                 ("Bishop", "Black"): pygame.image.load("assets/_bishop_black.png")
+                 ("Bishop", "White"): pygame.image.load("assets/pieces/whiteBishop.png"),
+                 ("Bishop", "Black"): pygame.image.load("assets/pieces/blackBishop.png")
 }
 
 # Jpg scaling for tiles
