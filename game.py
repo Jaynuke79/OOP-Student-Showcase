@@ -10,6 +10,7 @@ from chess_piece import ChessPiece, Pawn, Rook, Knight
 from chess_piece import Bishop, King, Queen
 from promote_to_queen import PromoteToQueenEvent
 from freeze_piece import FreezePieceEvent
+from board import Board
 
 # Initialize pygame
 pygame.init()
@@ -145,7 +146,7 @@ def draw_log():
 def play_turn():
     messages = []
 
-    board = Board(pieces)
+    board = Board(pieces, ROWS, COLS)
 
     # Randomly select non-frozen piece
     movable_pieces = [p for p in pieces if not p.is_frozen()]
@@ -188,13 +189,18 @@ while running:
     draw_log()
     pygame.display.flip()
 
+    dragging_piece = None
+    original_row = original_col = None
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+        # Event for press space bar
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             event_log.extend(play_turn())
         
+        # Handle mouse clicks + drags
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
             row = mouse_y // SQUARE_SIZE
@@ -203,15 +209,30 @@ while running:
             for piece in reversed(pieces):
                 if piece._row == row and piece._col == col and not piece.is_frozen():
                     dragging_piece = piece
+                    original_row, original_col = dragging_piece._row, dragging_piece._col
                     offset_x = mouse_x - col * SQUARE_SIZE
                     offset_y = mouse_y - row * SQUARE_SIZE
                     break
 
+        # Handle event when mouse click is released
         elif event.type == pygame.MOUSEBUTTONUP:
             if dragging_piece:
                 mouse_x, mouse_y = event.pos
-                dragging_piece._col = max(0, min(COLS - 1, mouse_x // SQUARE_SIZE))
-                dragging_piece._row = max(0, min(ROWS - 1, mouse_y // SQUARE_SIZE))
+                new_row = max(0, min(ROWS - 1, mouse_y // SQUARE_SIZE))
+                new_col = max(0, min(COLS -1, mouse_x // SQUARE_SIZE))
+
+                # Board to determine valid moves
+                board = Board(pieces, ROWS, COLS)
+                valid_moves = dragging_piece.get_valid_moves(board)
+
+                if (new_row, new_col) in valid_moves:
+                    dragging_piece.row = new_row
+                    dragging_piece.col = new_col
+                else:
+                    # Invalid move, snap piece back
+                    dragging_piece._row = original_row
+                    dragging_piece._col = original_col
+                
                 dragging_piece = None
         
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:

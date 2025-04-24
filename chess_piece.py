@@ -64,16 +64,29 @@ class Pawn(ChessPiece):
         direction: int = 1 if self._color == "White" else -1
         moves = []
 
-        one_step = (self._row + direction, self._col)
-        if 0 <= one_step[0] < 8:
-            moves.append(one_step)
+        # One step forward
+        one_step_row = self._row + direction
 
-        start_row = 1 if self._color == "White" else 6
-        if self._row == start_row:
-            two_step = (self._row + 2 * direction, self._col)
-            if 0 <= two_step[0] < 8:
-                moves.append(two_step)
-        return moves
+        # Check if board ie empty before making move
+        if board.is_empty(one_step_row, self._col):
+            moves.append((one_step_row, self._col))
+
+            # Two steps forward from start (Fundamental Chess rule)
+            start_row = 1 if self._color == "White" else 6
+            if self._row == start_row:
+                two_step_row = self._row + 2 * direction
+                if board.is_empty(two_step_row, self._col):
+                    moves.append((two_step_row, self._col))
+
+        # Diagonal captures (Fundamental Chess rule)
+        for dc in [-1, 1]: # Left, right
+            diag_row = self._row + direction
+            diag_col = self._col + dc
+            target = board.get_piece(diag_row, diag_col)
+            if target and target.get_color() != self._color:
+                moves.append((diag_row, diag_col))
+        
+        return [move for move in moves if 0 <= move[0] < 8 and 0 <= move[1] < 8]
 
 class Queen(ChessPiece):
     """
