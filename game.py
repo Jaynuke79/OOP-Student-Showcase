@@ -145,6 +145,7 @@ def draw_log():
 def play_turn():
     messages = []
 
+    board = Board(pieces)
 
     # Randomly select non-frozen piece
     movable_pieces = [p for p in pieces if not p.is_frozen()]
@@ -172,7 +173,8 @@ def play_turn():
         messages.append(result)
 
     else:
-        messages.append(f"{piece._name} moves normally.")
+        valid_moves = selected_piece.get_valid_moves(board)
+        messages.append(f"{selected_piece._name} valid moves: {valid_moves}")
     
     return messages
 
