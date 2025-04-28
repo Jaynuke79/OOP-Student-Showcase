@@ -190,7 +190,8 @@ while running:
     pygame.display.flip()
 
     dragging_piece = None
-    original_row = original_col = None
+    original_row = None
+    original_col = None
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -209,9 +210,10 @@ while running:
             for piece in reversed(pieces):
                 if piece._row == row and piece._col == col and not piece.is_frozen():
                     dragging_piece = piece
-                    original_row, original_col = dragging_piece._row, dragging_piece._col
                     offset_x = mouse_x - col * SQUARE_SIZE
                     offset_y = mouse_y - row * SQUARE_SIZE
+                    original_row = piece._row
+                    original_col = piece._col
                     break
 
         # Handle event when mouse click is released
