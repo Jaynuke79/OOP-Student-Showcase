@@ -1,0 +1,19 @@
+class ChessPiece {
+.... Getters ....
+name: string
+unit_count_limit: int
+movement_count: int
+movement_style: string
+color: string
+
+.... Setters ....
+.... Methods ....
+
+____ Private Data ____
+string name
+int unit_count_limit
+string movement_style
+int movement_count
+string color
+
+}
