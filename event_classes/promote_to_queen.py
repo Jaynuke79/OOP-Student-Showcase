@@ -21,6 +21,9 @@ class PromoteToQueenEvent(RandomEvent):
             new_queen = Queen("Queen", piece.get_color(), piece._row, piece._col,
                           1, 8, "any")
 
+            new_queen.promoted = True
+            new_queen.promotion_timer = 100
+
             # Replace promoted unit with new Queen unit
             index = pieces.index(piece)
             pieces[index] = new_queen

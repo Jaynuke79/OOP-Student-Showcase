@@ -44,7 +44,7 @@ class Board:
     def get_piece(self, row, col):
         """
         """
-        if 0 <= row < rows and 0 <= col < cols:
+        if 0 <= row < self.rows and 0 <= col < self.cols:
             return self.grid[row][col]
         return None
 

@@ -96,18 +96,40 @@ class Pawn(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit, 
                          movement_count, movement_style)
     
-    # def get_move_directions(self):
-    #     """
+    def get_valid_moves(self, board):
+        """
+        Overrided function for special Pawn movement rules
+        - Forward normally
+            - Move forward two spaces if at beginning/never moved yet
+        - Capture diagonally
+        """
+        direction = 1 if self._color == "White" else -1
+        moves = []
 
-    #     """
-    #     return [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        # Move forward once
+        one_step_row = self._row + direction
+        if 0 <= one_step_row < 8 and board.is_empty(one_step_row, self._col):
+            moves.append((one_step_row, self._col))
+
+            # Move forward two squares if at starting pos
+            start_row = 1 if self._color == "White" else 6
+            if self._row == start_row:  # Check if in starting position
+                two_step_row = self._row + 2 * direction
+                if board.is_empty(two_step_row, self._col):
+                    moves.append((two_step_row, self._col))
+        
+        # Diagonal capture mechanism
+        for dc in [-1, 1]: 
+            diag_row = self._row + direction
+            diag_col = self._col + dc
+            if 0 <= diag_row < 8 and 0 <= diag_col < 8:
+                target = board.get_piece(diag_row, diag_col)
+                if target and target.get_color() != self._color:
+                    moves.append((diag_row, diag_col))
+
+        return moves
     
-    def get_max_steps(self):
-        """
-        Pawn max movement: 1 (except when at beginning)
-        """
-        return 1
-
+    
 
 class Queen(ChessPiece):
     """
@@ -119,12 +141,22 @@ class Queen(ChessPiece):
                  unit_count_limit: int, movement_count: int, movement_style: str):
         super().__init__(name, color, row, col, unit_count_limit, 
                          movement_count, movement_style)
+
+    def get_move_directions(self):
+        """
+        Diagonal or straight in any direction
+        """
+        return [
+            (1, 0), (-1, 0), (0, 1), (0, -1), # Rook
+            (1, 1), (1, -1), (-1, 1), (-1, -1) # Bishop
+        ]
     
     #def get_valid_moves(self, board):
     def get_max_steps(self):
         """
         Queen max movement: 8 (across board)
         """
+        return 8
 
 class King(ChessPiece):
     """
@@ -142,7 +174,7 @@ class King(ChessPiece):
         Up, down, left, right, diagonal
         """
         return [
-            (1, 0), (-1, 0), (0, 1), (0, -1)
+            (1, 0), (-1, 0), (0, 1), (0, -1),
             (1, 1), (-1, 1), (1, -1), (-1, -1)
             ]
     
@@ -166,7 +198,13 @@ class Bishop(ChessPiece):
         Bottom right, bottom left
         Top right, top left
         """
-        return [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        return [(1, 1), (1, -1), (-1, 1), (-1, -1)] # Diagonal
+    
+    def get_max_steps(self):
+        """
+        Max steps for Bishop
+        """
+        return 8
         
     #def get_valid_moves(self, board):
 
@@ -187,9 +225,31 @@ class Knight(ChessPiece):
         Knight moves in an L shape
         (2, 1) = Move down twice, then move right once (down 2, right 1)
         """
-        return [(2, 1), (1, 2), (-1, 2), (-2,1)
+        return [(2, 1), (1, 2), (-1, 2), (-2,1),
                 (-2, -1), (2, -1), (-1, -2), (1, -2)]
 
+    def get_max_steps(self):
+        """
+        Max steps for Knight
+        """
+        return 4
+
+    def get_valid_moves(self, board):
+        """
+        Special override to handle Knight movements
+        """
+        moves = []
+        knight_moves = self.get_move_directions()
+
+        for dr, dc in knight_moves:
+            new_row = self._row + dr
+            new_col = self._col + dc
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                target = board.get_piece(new_row, new_col)
+                if target is None or target.get_color() != self._color:
+                    moves.append((new_row, new_col))
+        
+        return moves
 
 class Rook(ChessPiece):
     """
@@ -207,5 +267,11 @@ class Rook(ChessPiece):
         Up, down, left, right
         """
         return [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+    def get_max_steps(self):
+        """
+        Max steps for Rook
+        """
+        return 8
     
     #def get_valid_moves(self, board):

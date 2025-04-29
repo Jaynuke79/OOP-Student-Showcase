@@ -7,4 +7,5 @@ class FreezePieceEvent(RandomEvent):
 
     def apply(self, piece: ChessPiece):
         piece.freeze(self.turns)
+        piece.frozen_timer = 100
         return f"{piece.get_name()} is frozen for {self.turns} turn(s)!"

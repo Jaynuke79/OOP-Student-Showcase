@@ -32,9 +32,19 @@ GRAY = (180, 180, 180)
 DARK_GRAY = (100, 100, 100)
 BLUE = (50, 50, 255)
 RED = (255, 50, 50)
+BG_COLOR = [0, 0, 20]
+BG_DRIFT = [1, 1, 1]
+
+# Captured Pieces
+captured_white = []
+captured_black = []
+
+# Conditions for victory
+winner: str = None
+game_over: bool = False
 
 # Screen setup
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH+125, HEIGHT))
 pygame.display.set_caption("Chess Party")
 
 
@@ -101,6 +111,12 @@ piece_images = { ("Pawn", "White"): pygame.image.load("assets/pieces/whitePawn.p
                  ("Bishop", "Black"): pygame.image.load("assets/pieces/blackBishop.png")
 }
 
+promotion_overlay = pygame.image.load("assets/effects/promotion_sparkle.png")
+promotion_overlay = pygame.transform.scale(promotion_overlay, (SQUARE_SIZE, SQUARE_SIZE))
+frozen_overlay = pygame.image.load("assets/effects/frozen.png")
+frozen_overlay = pygame.transform.scale(frozen_overlay, (SQUARE_SIZE, SQUARE_SIZE))
+
+
 # Jpg scaling for tiles
 for key in piece_images:
     piece_images[key] = pygame.transform.scale(piece_images[key], (SQUARE_SIZE, SQUARE_SIZE))
@@ -110,12 +126,58 @@ event_log = []
 
 # Draw functions
 def draw_board():
+    """
+    Draws the chessboard
+    """
     for row in range(ROWS):
         for col in range(COLS):
             color = GRAY if (row + col) % 2 == 0 else DARK_GRAY
             pygame.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
+    # Highlights all valid moves when dragging a piece
+    if dragging_piece:
+        for move_row, move_col in valid_drag_moves:
+            highlight = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE),
+                                        pygame.SRCALPHA) # Opacity/Transparency
+            highlight.fill((0, 255, 0, 100)) # Green color, 100 alpha
+            screen.blit(highlight, (move_col * SQUARE_SIZE, move_row * SQUARE_SIZE))
+
+def draw_captured():
+    """
+    Draws a sidebar displaying all captured pieces during a game
+    """
+    sidebar_x = WIDTH
+    sidebar_width = 125
+    pygame.draw.rect(screen, BLACK, (WIDTH, 0, sidebar_width, HEIGHT))
+    
+    # Top half for captured White pieces
+    y = 10
+    screen.blit(FONT.render("White Captured:", True, WHITE), (sidebar_x + 5, y))
+    y += 30
+    for piece in captured_black: # Captured from Black
+        key = (piece.get_name(), "Black")
+        image = piece_images.get(key)
+        if image:
+            small_image = pygame.transform.scale(image, (30, 30))
+            screen.blit(small_image, (sidebar_x + 35, y))
+            y += 35
+
+    # Bottom half for captured Black pieces
+    y = HEIGHT // 2 + 10
+    screen.blit(FONT.render("Black Captured:", True, WHITE), (sidebar_x + 5, y))
+    y += 30
+    for piece in captured_white: # Captured from White
+        key = (piece.get_name(), "White")
+        image = piece_images.get(key)
+        if image:
+            small_image = pygame.transform.scale(image, (30, 30))
+            screen.blit(small_image, (sidebar_x + 35, y))
+            y += 35
+
 def draw_pieces():
+    """
+    Draws all chess pieces on the board
+    """
     for piece in pieces:
         # center = (piece._col * SQUARE_SIZE + SQUARE_SIZE // 2, piece._row * SQUARE_SIZE + SQUARE_SIZE // 2)
         # color = BLUE if piece._color == "White" else RED
@@ -128,13 +190,35 @@ def draw_pieces():
             if pos is None:
                     pos = (piece._col * SQUARE_SIZE, piece._row * SQUARE_SIZE)
             screen.blit(image, pos)
+        
+        # Overlay for Promotion effect
+        if hasattr(piece, "promoted") and piece.promoted:
+            if hasattr(piece, "promotion_timer"):
+                # Transparency transition
+                alpha = int((piece.promotion_timer / 100) * 255)
+                alpha = max(0, min(255, alpha))
+
+                overlay_copy = promotion_overlay.copy()
+                overlay_copy.set_alpha(alpha)
+
+                screen.blit(overlay_copy, pos)
 
         if piece.is_frozen():
             # pygame.draw.circle(screen, BLACK, center, 10)
             overlay = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
             overlay.set_alpha(100)
-            overlay.fill(BLACK)
+            overlay.fill((0, 100, 255))
             screen.blit(overlay, pos)
+
+        # Overlay for Frozen effect
+        if hasattr(piece, "frozen_timer"):
+            alpha = int((piece.frozen_timer / 100) * 255)
+            alpha = max(0, min(255, alpha))
+
+            frozen_copy = frozen_overlay.copy()
+            frozen_copy.set_alpha(alpha)
+
+            screen.blit(frozen_copy, pos)
 
 def draw_log():
     y = BOARD_HEIGHT + 10
@@ -142,6 +226,31 @@ def draw_log():
     for i, msg in enumerate(event_log[-3:]):
         text_surface = FONT.render(msg, True, WHITE)
         screen.blit(text_surface, (10, y + i * 20))
+
+def draw_victory_screen():
+    """
+    Screen that appears if game has been won by either side
+    """
+
+    # Background changes color
+    for i in range(3):
+        BG_COLOR[i] += BG_DRIFT[i]
+
+        if BG_COLOR[i] >= 100 or BG_COLOR[i] <= 20:
+            BG_DRIFT[i] *= -1
+            
+    screen.fill(BG_COLOR)
+
+    font = pygame.font.SysFont('Arial', 50)
+    text = font.render(f"{winner} WINS!", True, (255, 255, 0))
+    text_rect = text.get_rect(center=((WIDTH + 125) // 2, HEIGHT // 2))
+    screen.blit(text, text_rect)
+
+    small_font = pygame.font.SysFont('Arial', 24)
+    subtext = small_font.render("Click to exit", True, (200, 200, 200))
+    subtext_rect = subtext.get_rect(center=((WIDTH+125) // 2, HEIGHT // 2 + 50))
+    screen.blit(subtext, subtext_rect)
+
 
 def play_turn():
     messages = []
@@ -182,19 +291,48 @@ def play_turn():
 # Main game loop
 running = True
 clock = pygame.time.Clock()
+
+dragging_piece = None
+original_row = None
+original_col = None
+valid_drag_moves = []
+
+current_turn = "White"
+
 while running:
     screen.fill(BLACK)
-    draw_board()
-    draw_pieces()
-    draw_log()
+    
+    if game_over:
+        draw_victory_screen()
+    
+    else:
+        draw_board()
+        draw_pieces()
+        draw_log()
+        draw_captured()
+
     pygame.display.flip()
 
-    dragging_piece = None
-    original_row = None
-    original_col = None
+    for piece in pieces:
+        # Promotion effect timer
+        if hasattr(piece, "promotion_timer"):
+            piece.promotion_timer -= 1
+            if piece.promotion_timer <= 0:
+                piece.promoted = False
+                del piece.promotion_timer
+
+        # Frozen effect timer
+        if hasattr(piece, "frozen_timer"):
+            piece.frozen_timer -= 1
+            if piece.frozen_timer <= 0:
+                piece.frozen = False
+                del piece.frozen_timer
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            running = False
+         
+        if game_over and event.type == pygame.MOUSEBUTTONDOWN:
             running = False
 
         # Event for press space bar
@@ -208,12 +346,15 @@ while running:
             col = mouse_x // SQUARE_SIZE
 
             for piece in reversed(pieces):
-                if piece._row == row and piece._col == col and not piece.is_frozen():
+                if piece._row == row and piece._col == col and not piece.is_frozen() and piece.get_color() == current_turn:
                     dragging_piece = piece
                     offset_x = mouse_x - col * SQUARE_SIZE
                     offset_y = mouse_y - row * SQUARE_SIZE
                     original_row = piece._row
                     original_col = piece._col
+
+                    board = Board(pieces, ROWS, COLS)
+                    valid_drag_moves = dragging_piece.get_valid_moves(board)
                     break
 
         # Handle event when mouse click is released
@@ -228,14 +369,43 @@ while running:
                 valid_moves = dragging_piece.get_valid_moves(board)
 
                 if (new_row, new_col) in valid_moves:
-                    dragging_piece.row = new_row
-                    dragging_piece.col = new_col
+                    # Check if capture is needed
+                    target_piece = board.get_piece(new_row, new_col)
+                    if target_piece and target_piece.get_color() != dragging_piece.get_color():
+                        event_log.extend([f"{dragging_piece.get_color()} {dragging_piece.get_name()}"
+                                          f" captured {target_piece.get_color()} {target_piece.get_name()} at ({new_row}, {new_col})"])
+
+                        if target_piece.get_color() == "White":
+                            captured_white.append(target_piece)
+                            if target_piece.get_name() == "King":
+                                event_log.extend([f"Checkmate! Black wins."])
+                                game_over = True
+                                winner = "Black"
+
+                        else:
+                            captured_black.append(target_piece)
+                            if target_piece.get_name() == "King":
+                                event_log.extend([f"Checkmate! White wins."])
+                                game_over = True
+                                winner = "White"
+
+                        pieces.remove(target_piece)
+
+
+                    dragging_piece._row = new_row
+                    dragging_piece._col = new_col
+                    
+                    # Play next turn
+                    event_log.extend(play_turn())
+                    current_turn = "Black" if current_turn == "White" else "White"
+
                 else:
                     # Invalid move, snap piece back
                     dragging_piece._row = original_row
                     dragging_piece._col = original_col
                 
                 dragging_piece = None
+                valid_drag_moves = []
         
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             event_log.extend(play_turn())
