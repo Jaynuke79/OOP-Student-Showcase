@@ -188,9 +188,6 @@ def draw_pieces():
     Draws all chess pieces on the board
     """
     for piece in pieces:
-        # center = (piece._col * SQUARE_SIZE + SQUARE_SIZE // 2, piece._row * SQUARE_SIZE + SQUARE_SIZE // 2)
-        # color = BLUE if piece._color == "White" else RED
-        # pygame.draw.circle(screen, color, center, 20)
         pos = (piece._col * SQUARE_SIZE, piece._row * SQUARE_SIZE)
         key = (piece._name, piece._color)
         image = piece_images.get(key)
