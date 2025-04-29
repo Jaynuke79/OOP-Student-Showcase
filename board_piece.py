@@ -1,9 +1,10 @@
 # BoardPiece class
 class BoardPiece:
-    def __init__(self, label: str, color: str, surprise: object, piece_in_place: bool):
+    def __init__(self, label: str, color: str,
+                 surprise: object, piece_in_place: bool):
         self._label = label
         self._color = color
-        self._surprise = surprise  # can be any object representing the 'surprise'
+        self._surprise = surprise
         self._piece_in_place = piece_in_place
 
     # Getters

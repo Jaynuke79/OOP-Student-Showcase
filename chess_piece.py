@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+
 
 # ChessPiece class
 class ChessPiece:
@@ -7,8 +8,9 @@ class ChessPiece:
     Each unique piece will inherit from this class
     """
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
         self._name = name
         self._color = color
         self._row = row
@@ -46,7 +48,7 @@ class ChessPiece:
         pass
 
     def get_valid_moves(self, board) -> list:
-        """ 
+        """
         Return list of (row, col) tuples that represent
         the legal movements of each piece
         """
@@ -60,15 +62,15 @@ class ChessPiece:
                 new_col = self._col + dc * step
                 if not (0 <= new_row < 8 and 0 <= new_col < 8):
                     break
-                
+
                 target = board.get_piece(new_row, new_col)
                 if target is None:
                     moves.append((new_row, new_col))
                 else:
                     if target.get_color() != self._color:
-                        moves.append((new_row, new_col)) # Capture
-                    break # Can't jump over pieces
-        
+                        moves.append((new_row, new_col))  # Capture
+                    break  # Can't jump over pieces
+
         return moves
 
     def freeze(self, turns: int):
@@ -80,10 +82,11 @@ class ChessPiece:
     def reduce_frozen(self):
         if self._frozen_turns > 0:
             self._frozen_turns -= 1
-    
+
     @classmethod
     def get_unit_count(cls):
         return cls.unit_count
+
 
 class Pawn(ChessPiece):
     """
@@ -91,11 +94,12 @@ class Pawn(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
-    
+
     def get_valid_moves(self, board):
         """
         Overrided function for special Pawn movement rules
@@ -117,9 +121,9 @@ class Pawn(ChessPiece):
                 two_step_row = self._row + 2 * direction
                 if board.is_empty(two_step_row, self._col):
                     moves.append((two_step_row, self._col))
-        
+
         # Diagonal capture mechanism
-        for dc in [-1, 1]: 
+        for dc in [-1, 1]:
             diag_row = self._row + direction
             diag_col = self._col + dc
             if 0 <= diag_row < 8 and 0 <= diag_col < 8:
@@ -128,8 +132,7 @@ class Pawn(ChessPiece):
                     moves.append((diag_row, diag_col))
 
         return moves
-    
-    
+
 
 class Queen(ChessPiece):
     """
@@ -137,9 +140,10 @@ class Queen(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
     def get_move_directions(self):
@@ -147,16 +151,16 @@ class Queen(ChessPiece):
         Diagonal or straight in any direction
         """
         return [
-            (1, 0), (-1, 0), (0, 1), (0, -1), # Rook
-            (1, 1), (1, -1), (-1, 1), (-1, -1) # Bishop
+            (1, 0), (-1, 0), (0, 1), (0, -1),  # Rook
+            (1, 1), (1, -1), (-1, 1), (-1, -1)  # Bishop
         ]
-    
-    #def get_valid_moves(self, board):
+
     def get_max_steps(self):
         """
         Queen max movement: 8 (across board)
         """
         return 8
+
 
 class King(ChessPiece):
     """
@@ -164,9 +168,10 @@ class King(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
     def get_move_directions(self):
@@ -177,9 +182,10 @@ class King(ChessPiece):
             (1, 0), (-1, 0), (0, 1), (0, -1),
             (1, 1), (-1, 1), (1, -1), (-1, -1)
             ]
-    
+
     def get_max_steps(self):
         return 1
+
 
 class Bishop(ChessPiece):
     """
@@ -187,9 +193,10 @@ class Bishop(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
     def get_move_directions(self):
@@ -198,15 +205,14 @@ class Bishop(ChessPiece):
         Bottom right, bottom left
         Top right, top left
         """
-        return [(1, 1), (1, -1), (-1, 1), (-1, -1)] # Diagonal
-    
+        return [(1, 1), (1, -1), (-1, 1), (-1, -1)]  # Diagonal
+
     def get_max_steps(self):
         """
         Max steps for Bishop
         """
         return 8
-        
-    #def get_valid_moves(self, board):
+
 
 class Knight(ChessPiece):
     """
@@ -214,18 +220,18 @@ class Knight(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
-        
-    #def get_valid_moves(self, board):
+
     def get_move_directions(self):
         """
         Knight moves in an L shape
         (2, 1) = Move down twice, then move right once (down 2, right 1)
         """
-        return [(2, 1), (1, 2), (-1, 2), (-2,1),
+        return [(2, 1), (1, 2), (-1, 2), (-2, 1),
                 (-2, -1), (2, -1), (-1, -2), (1, -2)]
 
     def get_max_steps(self):
@@ -248,8 +254,9 @@ class Knight(ChessPiece):
                 target = board.get_piece(new_row, new_col)
                 if target is None or target.get_color() != self._color:
                     moves.append((new_row, new_col))
-        
+
         return moves
+
 
 class Rook(ChessPiece):
     """
@@ -257,9 +264,10 @@ class Rook(ChessPiece):
     """
     unit_count = 0
 
-    def __init__(self, name: str, color: str, row: int, col: int, 
-                 unit_count_limit: int, movement_count: int, movement_style: str):
-        super().__init__(name, color, row, col, unit_count_limit, 
+    def __init__(self, name: str, color: str, row: int, col: int,
+                 unit_count_limit: int, movement_count: int,
+                 movement_style: str):
+        super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
     def get_move_directions(self):
@@ -273,5 +281,3 @@ class Rook(ChessPiece):
         Max steps for Rook
         """
         return 8
-    
-    #def get_valid_moves(self, board):
