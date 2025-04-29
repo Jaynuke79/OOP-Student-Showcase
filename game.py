@@ -1,6 +1,15 @@
 import sys
 import os
 
+def resource_path(relative_path):
+    """Path to resource for dev or PyInstaller"""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 sys.path.append(os.path.join(os.path.dirname(__file__), 'event_classes'))
 
 # Re-imports and setup after kernel reset
@@ -92,28 +101,28 @@ pieces = [Pawn("Pawn", "White", 1, 0, 8, 1, "forward"),
           Queen("Queen", "Black", 7, 3, 1, 8, "any"),
           ]
 
-piece_images = { ("Pawn", "White"): pygame.image.load("assets/pieces/whitePawn.png"),
-                 ("Pawn", "Black"): pygame.image.load("assets/pieces/blackPawn.png"),
+piece_images = { ("Pawn", "White"): pygame.image.load(resource_path("assets/pieces/whitePawn.png")),
+                 ("Pawn", "Black"): pygame.image.load(resource_path("assets/pieces/blackPawn.png")),
 
-                 ("Rook", "White"): pygame.image.load("assets/pieces/whiteRook.png"),
-                 ("Rook", "Black"): pygame.image.load("assets/pieces/blackRook.png"),
+                 ("Rook", "White"): pygame.image.load(resource_path("assets/pieces/whiteRook.png")),
+                 ("Rook", "Black"): pygame.image.load(resource_path("assets/pieces/blackRook.png")),
 
-                 ("Knight", "White"): pygame.image.load("assets/pieces/whiteKnight.png"),
-                 ("Knight", "Black"): pygame.image.load("assets/pieces/blackKnight.png"),
+                 ("Knight", "White"): pygame.image.load(resource_path("assets/pieces/whiteKnight.png")),
+                 ("Knight", "Black"): pygame.image.load(resource_path("assets/pieces/blackKnight.png")),
 
-                 ("King", "White"): pygame.image.load("assets/pieces/whiteKing.png"),
-                 ("King", "Black"): pygame.image.load("assets/pieces/blackKing.png"),
+                 ("King", "White"): pygame.image.load(resource_path("assets/pieces/whiteKing.png")),
+                 ("King", "Black"): pygame.image.load(resource_path("assets/pieces/blackKing.png")),
 
-                 ("Queen", "White"): pygame.image.load("assets/pieces/whiteQueen.png"),
-                 ("Queen", "Black"): pygame.image.load("assets/pieces/blackQueen.png"),
+                 ("Queen", "White"): pygame.image.load(resource_path("assets/pieces/whiteQueen.png")),
+                 ("Queen", "Black"): pygame.image.load(resource_path("assets/pieces/blackQueen.png")),
 
-                 ("Bishop", "White"): pygame.image.load("assets/pieces/whiteBishop.png"),
-                 ("Bishop", "Black"): pygame.image.load("assets/pieces/blackBishop.png")
+                 ("Bishop", "White"): pygame.image.load(resource_path("assets/pieces/whiteBishop.png")),
+                 ("Bishop", "Black"): pygame.image.load(resource_path("assets/pieces/blackBishop.png"))
 }
 
-promotion_overlay = pygame.image.load("assets/effects/promotion_sparkle.png")
+promotion_overlay = pygame.image.load(resource_path("assets/effects/promotion_sparkle.png"))
 promotion_overlay = pygame.transform.scale(promotion_overlay, (SQUARE_SIZE, SQUARE_SIZE))
-frozen_overlay = pygame.image.load("assets/effects/frozen.png")
+frozen_overlay = pygame.image.load(resource_path("assets/effects/frozen.png"))
 frozen_overlay = pygame.transform.scale(frozen_overlay, (SQUARE_SIZE, SQUARE_SIZE))
 
 
