@@ -13,7 +13,7 @@ from chess_piece import Pawn, Queen
 
 
 class DummyPiece(ChessPiece):
-    unit_count = 0  # ← Add this line
+    unit_count = 0
 
     def __init__(self, name="Pawn", color="white", row=0, col=0):
         unit_count_limit = 8
@@ -40,12 +40,14 @@ class DummyBoard:
 
 class TestRandomEvent(unittest.TestCase):
     def test_random_event_not_implemented(self):
+        # test if random event raises NotImplementedError
         with self.assertRaises(NotImplementedError):
             RandomEvent().apply(MagicMock())
 
 
 class TestExplosion(unittest.TestCase):
     def setUp(self):
+        # set up board and explosion event
         self.board = DummyBoard()
         self.explosion = Explosion(self.board)
 
@@ -59,13 +61,14 @@ class TestExplosion(unittest.TestCase):
 
         updated_pieces = self.explosion.trigger(1, 1, pieces)
 
-        self.assertEqual(len(updated_pieces), 0)
+        self.assertEqual(len(updated_pieces), 0)  # ensure all pieces are removed
         for r in range(3):
             for c in range(3):
-                self.assertIsNone(self.board.grid[r][c])
+                self.assertIsNone(self.board.grid[r][c])  # check grid is empty
                 self.board.board_state[r][c].set_piece_in_place.assert_called_with(False)
 
     def test_explosion_preserves_outside_pieces(self):
+        # test explosion does not affect pieces outside the blast zone
         piece1 = DummyPiece(row=0, col=0)
         piece2 = DummyPiece(row=4, col=4)
         self.board.grid[0][0] = piece1
@@ -73,69 +76,72 @@ class TestExplosion(unittest.TestCase):
 
         pieces = [piece1, piece2]
         result = self.explosion.trigger(0, 0, pieces)
-        self.assertEqual(result, [piece2])
+        self.assertEqual(result, [piece2])  # ensure piece2 is preserved
 
 
 class TestFreezePieceEvent(unittest.TestCase):
     def test_freeze_applies_properly(self):
+        # test freeze applies correctly to piece
         piece = DummyPiece()
         event = FreezePieceEvent(turns=2)
         msg = event.apply(piece)
-        self.assertTrue(piece.frozen)
-        self.assertEqual(piece.freeze_calls, 1)
-        self.assertEqual(piece.frozen_timer, 100)
-        self.assertIn("frozen for 2 turn(s)", msg)
+        self.assertTrue(piece.frozen)  # piece should be frozen
+        self.assertEqual(piece.freeze_calls, 1)  # freeze called once
+        self.assertEqual(piece.frozen_timer, 100)  # frozen timer should be 100
+        self.assertIn("frozen for 2 turn(s)", msg)  # check the message
 
     @given(st.integers(min_value=1, max_value=10))
     def test_freeze_with_random_turns(self, turns):
-        """Property-based test to ensure freeze always applies."""
+        # test freeze with random number of turns
         piece = DummyPiece()
         event = FreezePieceEvent(turns=turns)
         msg = event.apply(piece)
 
-        self.assertTrue(piece.frozen)
-        self.assertEqual(piece.freeze_calls, 1)
-        self.assertEqual(piece.frozen_timer, 100)
-        self.assertIn(f"frozen for {turns} turn(s)", msg)
+        self.assertTrue(piece.frozen)  # piece should be frozen
+        self.assertEqual(piece.freeze_calls, 1)  # freeze called once
+        self.assertEqual(piece.frozen_timer, 100)  # frozen timer should be 100
+        self.assertIn(f"frozen for {turns} turn(s)", msg)  # check the message
 
 
 class TestPromoteToQueenEvent(unittest.TestCase):
     def setUp(self):
-        Queen._unit_count = 0  # Reset static count before each test
+        # reset queen count before each test
+        Queen._unit_count = 0
 
     def test_promotes_piece_when_under_limit(self):
+        # test promote piece to queen when unit count is under limit
         piece = DummyPiece("Pawn", "white", 3, 3)
         pieces = [piece]
         event = PromoteToQueenEvent()
         msg = event.apply(piece, pieces)
 
-        self.assertIsInstance(pieces[0], Queen)
-        self.assertTrue(pieces[0].promoted)
-        self.assertEqual(pieces[0].promotion_timer, 100)
-        self.assertIn("has been promoted to Queen", msg)
+        self.assertIsInstance(pieces[0], Queen)  # piece should be promoted to Queen
+        self.assertTrue(pieces[0].promoted)  # check if promoted flag is True
+        self.assertEqual(pieces[0].promotion_timer, 100)  # promotion timer should be 100
+        self.assertIn("has been promoted to Queen", msg)  # check the message
 
     def test_does_not_promote_if_limit_reached(self):
-        # Dynamically add attribute for test
+        # dynamically add attribute for test
         if not hasattr(Queen, 'unit_count_limit'):
-            Queen.unit_count_limit = 2  # or your default limit
+            Queen.unit_count_limit = 2
 
-        Queen.unit_count = Queen.unit_count_limit  # Simulate the limit being reached
+        Queen.unit_count = Queen.unit_count_limit  # simulate the limit being reached
 
-        # Create a board and pawn for the test
+        # create board and pawn for the test
         board = Board(pieces=[])
         pawn = Pawn("Pawn", "White", 6, 0, 8, 1, "forward")
         board.update([pawn])
 
-        # Dynamically set pieces
-        pieces = [pawn]  # You can add more pieces if needed
+        # dynamically set pieces
+        pieces = [pawn]
 
-        # Create the PromoteToQueenEvent with only one argument (the pawn will be handled within)
-        event = PromoteToQueenEvent()  # No pawn is passed directly here
+        # create the PromoteToQueenEvent with only one argument
+        event = PromoteToQueenEvent()
 
-        # Apply the event to the pawn, not the board (pass pawn to event)
-        event.apply(pawn, pieces)  # Correctly passing the pawn instead of the board
+        # apply the event to the pawn, not the board
+        event.apply(pawn, pieces)
 
-        # The pawn should not be promoted
+        # the pawn should not be promoted
         self.assertIsInstance(board.get_piece(6, 0), Pawn)
 
 
