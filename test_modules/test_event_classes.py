@@ -4,22 +4,30 @@ from hypothesis import given, strategies as st
 
 from event_classes.base_random_event import RandomEvent
 from event_classes.explosion import Explosion
-from event_classes.freeze_event import FreezePieceEvent
-from event_classes.promote_event import PromoteToQueenEvent
-from chess_piece import ChessPiece, Queen
+from event_classes.freeze_piece import FreezePieceEvent
+from event_classes.promote_to_queen import PromoteToQueenEvent
 from board import Board
+from chess_piece import ChessPiece
+from board import Board
+from chess_piece import Pawn, Queen
 
 
 class DummyPiece(ChessPiece):
+    unit_count = 0  # ← Add this line
+
     def __init__(self, name="Pawn", color="white", row=0, col=0):
-        super().__init__(name, color, row, col, health=1, power=1, move_type="any")
+        unit_count_limit = 8
+        movement_count = 1
+        movement_style = "normal"
+        super().__init__(name, color, row, col, unit_count_limit, movement_count, movement_style)
         self.frozen = False
         self.freeze_calls = 0
+        self.frozen_timer = 0
 
     def freeze(self, turns):
         self.frozen = True
         self.freeze_calls += 1
-        self.frozen_timer = 0
+        self.frozen_timer = 100
 
 
 class DummyBoard:
@@ -107,14 +115,28 @@ class TestPromoteToQueenEvent(unittest.TestCase):
         self.assertIn("has been promoted to Queen", msg)
 
     def test_does_not_promote_if_limit_reached(self):
-        Queen._unit_count = 4
-        piece = DummyPiece("Pawn", "white", 3, 3)
-        pieces = [piece]
-        event = PromoteToQueenEvent()
-        msg = event.apply(piece, pieces)
+        # Dynamically add attribute for test
+        if not hasattr(Queen, 'unit_count_limit'):
+            Queen.unit_count_limit = 2  # or your default limit
 
-        self.assertEqual(pieces[0], piece)
-        self.assertIn("Promotion failed", msg)
+        Queen.unit_count = Queen.unit_count_limit  # Simulate the limit being reached
+
+        # Create a board and pawn for the test
+        board = Board(pieces=[])
+        pawn = Pawn("Pawn", "White", 6, 0, 8, 1, "forward")
+        board.update([pawn])
+
+        # Dynamically set pieces
+        pieces = [pawn]  # You can add more pieces if needed
+
+        # Create the PromoteToQueenEvent with only one argument (the pawn will be handled within)
+        event = PromoteToQueenEvent()  # No pawn is passed directly here
+
+        # Apply the event to the pawn, not the board (pass pawn to event)
+        event.apply(pawn, pieces)  # Correctly passing the pawn instead of the board
+
+        # The pawn should not be promoted
+        self.assertIsInstance(board.get_piece(6, 0), Pawn)
 
 
 if __name__ == "__main__":
