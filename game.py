@@ -1,9 +1,10 @@
 import sys
 import os
+from typing import cast
 import pygame
 import random
 from chess_piece import Pawn, Rook, Knight
-from chess_piece import Bishop, King, Queen
+from chess_piece import ChessPiece, Bishop, King, Queen
 from board import Board
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'event_classes'))
@@ -11,10 +12,10 @@ from promote_to_queen import PromoteToQueenEvent  # noqa: E402
 from freeze_piece import FreezePieceEvent  # noqa: E402
 
 
-def resource_path(relative_path):
+def resource_path(relative_path: str) -> str:
     """Path to resource for dev or PyInstaller"""
     try:
-        base_path = sys._MEIPASS
+        base_path = cast(str, getattr(sys, "_MEIPASS", os.path.abspath(".")))
     except Exception:
         base_path = os.path.abspath(".")
 
@@ -45,11 +46,12 @@ BG_COLOR = [0, 0, 20]
 BG_DRIFT = [1, 1, 1]
 
 # Captured Pieces
-captured_white = []
-captured_black = []
+captured_white: list[ChessPiece] = []
+captured_black: list[ChessPiece] = []
+event_log: list[str] = []
 
 # Conditions for victory
-winner: str = None
+winner: str | None = None
 game_over: bool = False
 
 # Screen setup
@@ -103,25 +105,35 @@ pieces = [Pawn("Pawn", "White", 1, 0, 8, 1, "forward"),
 
 ap: str = "assets/pieces/"
 ae: str = "assets/effects/"
-rss_path: str = resource_path
+rss_path = resource_path
+pil = pygame.image.load
+
+
+def li(path: str) -> pygame.Surface:
+    """
+    Helper function for loading images
+    """
+    return pygame.image.load(resource_path(path)).convert_alpha()
+
+
 piece_images = {
-    ("Pawn", "White"): pygame.image.load(rss_path(f"{ap}whitePawn.png")),
-    ("Pawn", "Black"): pygame.image.load(rss_path(f"{ap}blackPawn.png")),
+    ("Pawn", "White"): li(f"{ap}whitePawn.png"),
+    ("Pawn", "Black"): li(f"{ap}blackPawn.png"),
 
-    ("Rook", "White"): pygame.image.load(rss_path(f"{ap}whiteRook.png")),
-    ("Rook", "Black"): pygame.image.load(rss_path(f"{ap}blackRook.png")),
+    ("Rook", "White"): li(f"{ap}whiteRook.png"),
+    ("Rook", "Black"): li(f"{ap}blackRook.png"),
 
-    ("Knight", "White"): pygame.image.load(rss_path(f"{ap}whiteKnight.png")),
-    ("Knight", "Black"): pygame.image.load(rss_path(f"{ap}blackKnight.png")),
+    ("Knight", "White"): li(f"{ap}whiteKnight.png"),
+    ("Knight", "Black"): li(f"{ap}blackKnight.png"),
 
-    ("King", "White"): pygame.image.load(rss_path(f"{ap}whiteKing.png")),
-    ("King", "Black"): pygame.image.load(rss_path(f"{ap}blackKing.png")),
+    ("King", "White"): li(f"{ap}whiteKing.png"),
+    ("King", "Black"): li(f"{ap}blackKing.png"),
 
-    ("Queen", "White"): pygame.image.load(rss_path(f"{ap}whiteQueen.png")),
-    ("Queen", "Black"): pygame.image.load(rss_path(f"{ap}blackQueen.png")),
+    ("Queen", "White"): li(f"{ap}whiteQueen.png"),
+    ("Queen", "Black"): li(f"{ap}blackQueen.png"),
 
-    ("Bishop", "White"): pygame.image.load(rss_path(f"{ap}whiteBishop.png")),
-    ("Bishop", "Black"): pygame.image.load(rss_path(f"{ap}blackBishop.png"))
+    ("Bishop", "White"): li(f"{ap}whiteBishop.png"),
+    ("Bishop", "Black"): li(f"{ap}blackBishop.png")
 }
 
 pts = pygame.transform.scale  # shortened
@@ -142,7 +154,7 @@ event_log = []
 
 
 # Draw functions
-def draw_board():
+def draw_board() -> None:
     """
     Draws the chessboard
     """
@@ -162,7 +174,7 @@ def draw_board():
                         (move_col * SQUARE_SIZE, move_row * SQUARE_SIZE))
 
 
-def draw_captured():
+def draw_captured() -> None:
     """
     Draws a sidebar displaying all captured pieces during a game
     """
@@ -197,7 +209,7 @@ def draw_captured():
             y += 35
 
 
-def draw_pieces():
+def draw_pieces() -> None:
     """
     Draws all chess pieces on the board
     """
@@ -215,7 +227,7 @@ def draw_pieces():
         if hasattr(piece, "promoted") and piece.promoted:
             if hasattr(piece, "promotion_timer"):
                 # Transparency transition
-                alpha = int((piece.promotion_timer / 100) * 255)
+                alpha = int((cast(int, piece.promotion_timer) / 100) * 255)
                 alpha = max(0, min(255, alpha))
 
                 overlay_copy = promotion_overlay.copy()
@@ -231,8 +243,8 @@ def draw_pieces():
             screen.blit(overlay, pos)
 
         # Overlay for Frozen effect
-        if hasattr(piece, "frozen_timer"):
-            alpha = int((piece.frozen_timer / 100) * 255)
+        if hasattr(piece, "frozen_timer") and piece.frozen_timer is not None:
+            alpha = int((piece.frozen_timer) / 100 * 255)
             alpha = max(0, min(255, alpha))
 
             frozen_copy = frozen_overlay.copy()
@@ -241,7 +253,7 @@ def draw_pieces():
             screen.blit(frozen_copy, pos)
 
 
-def draw_log():
+def draw_log() -> None:
     y = BOARD_HEIGHT + 10
 
     for i, msg in enumerate(event_log[-3:]):
@@ -249,7 +261,7 @@ def draw_log():
         screen.blit(text_surface, (10, y + i * 20))
 
 
-def draw_victory_screen():
+def draw_victory_screen() -> None:
     """
     Screen that appears if game has been won by either side
     """
@@ -275,7 +287,7 @@ def draw_victory_screen():
     screen.blit(subtext, subtext_rect)
 
 
-def play_turn():
+def play_turn() -> list[str]:
     messages = []
 
     board = Board(pieces, ROWS, COLS)
@@ -338,14 +350,16 @@ while running:
 
     for piece in pieces:
         # Promotion effect timer
-        if hasattr(piece, "promotion_timer"):
-            piece.promotion_timer -= 1
+        if (hasattr(piece, "promotion_timer")
+                and piece.promotion_timer is not None):
+            if isinstance(piece.promotion_timer, int):
+                piece.promotion_timer -= 1
             if piece.promotion_timer <= 0:
                 piece.promoted = False
                 del piece.promotion_timer
 
         # Frozen effect timer
-        if hasattr(piece, "frozen_timer"):
+        if hasattr(piece, "frozen_timer") and piece.frozen_timer is not None:
             piece.frozen_timer -= 1
             if piece.frozen_timer <= 0:
                 piece.frozen = False
@@ -365,7 +379,10 @@ while running:
         # Handle mouse clicks + drags
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = event.pos
-            row = mouse_y // SQUARE_SIZE
+            if mouse_y is not None:
+                row = mouse_y // SQUARE_SIZE
+            else:
+                row = 0
             col = mouse_x // SQUARE_SIZE
 
             for piece in reversed(pieces):
@@ -399,11 +416,11 @@ while running:
                 dp = dragging_piece
                 if (new_row, new_col) in valid_moves:
                     # Check if capture is needed
-                    target_piece = board.get_piece(new_row, new_col)
-                    tp = target_piece
+                    tp = board.get_piece(new_row, new_col)
+
                     if (
-                        target_piece
-                        and target_piece.get_color() != dp.get_color()
+                        tp is not None
+                        and tp.get_color() != dp.get_color()
                     ):
                         event_log.extend([f"{dragging_piece.get_color()}"
                                           f"{dragging_piece.get_name()}"
@@ -411,21 +428,21 @@ while running:
                                           f"{tp.get_name()}"
                                           f"at ({new_row}, {new_col})"])
 
-                        if target_piece.get_color() == "White":
-                            captured_white.append(target_piece)
-                            if target_piece.get_name() == "King":
+                        if tp.get_color() == "White":
+                            captured_white.append(tp)
+                            if tp.get_name() == "King":
                                 event_log.extend("Checkmate! Black wins.")
                                 game_over = True
                                 winner = "Black"
 
                         else:
-                            captured_black.append(target_piece)
-                            if target_piece.get_name() == "King":
+                            captured_black.append(tp)
+                            if tp.get_name() == "King":
                                 event_log.extend("Checkmate! White wins.")
                                 game_over = True
                                 winner = "White"
 
-                        pieces.remove(target_piece)
+                        pieces.remove(tp)
 
                     dragging_piece._row = new_row
                     dragging_piece._col = new_col
@@ -437,8 +454,9 @@ while running:
 
                 else:
                     # Invalid move, snap piece back
-                    dragging_piece._row = original_row
-                    dragging_piece._col = original_col
+                    if original_row is not None and original_col is not None:
+                        dragging_piece._row = original_row
+                        dragging_piece._col = original_col
 
                 dragging_piece = None
                 valid_drag_moves = []

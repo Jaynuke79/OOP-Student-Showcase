@@ -1,12 +1,14 @@
-from abc import abstractmethod
+from abc import ABC
+from board import Board
 
 
 # ChessPiece class
-class ChessPiece:
+class ChessPiece(ABC):
     """
     Base/parent class for Chess Pieces
     Each unique piece will inherit from this class
     """
+    unit_count: int = 0
 
     def __init__(self, name: str, color: str, row: int, col: int,
                  unit_count_limit: int, movement_count: int,
@@ -20,22 +22,25 @@ class ChessPiece:
         self._movement_style = movement_style
         self._frozen_turns = 0  # For event tracking
         self.__class__.unit_count += 1
+        self.promoted = False
+        self.frozen = False
+        self.promotion_timer: int | None = None
+        self.frozen_timer: int | None = None
 
     def get_name(self) -> str: return self._name
-    def set_name(self, name: str): self._name = name
+    def set_name(self, name: str) -> None: self._name = name
 
     def get_color(self) -> str: return self._color
-    def set_color(self, color: str): self._color = color
+    def set_color(self, color: str) -> None: self._color = color
 
-    @abstractmethod
     def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Abstract method; allow each piece class to define
         allowed move directions (row_offset, col_offset)
         """
-        pass
+        direction = 1 if self._color == "White" else -1
+        return [(direction, 0)]
 
-    @abstractmethod
     def get_max_steps(self) -> int:
         """
         Defines the movement count limit of each piece
@@ -45,9 +50,9 @@ class ChessPiece:
         - Pawn: 1 (2 if at start)
         etc.
         """
-        pass
+        return 2
 
-    def get_valid_moves(self, board) -> list:
+    def get_valid_moves(self, board: Board) -> list[tuple[int, int]]:
         """
         Return list of (row, col) tuples that represent
         the legal movements of each piece
@@ -73,18 +78,18 @@ class ChessPiece:
 
         return moves
 
-    def freeze(self, turns: int):
+    def freeze(self, turns: int) -> None:
         self._frozen_turns += turns
 
     def is_frozen(self) -> bool:
         return self._frozen_turns > 0
 
-    def reduce_frozen(self):
+    def reduce_frozen(self) -> None:
         if self._frozen_turns > 0:
             self._frozen_turns -= 1
 
     @classmethod
-    def get_unit_count(cls):
+    def get_unit_count(cls) -> int:
         return cls.unit_count
 
 
@@ -100,7 +105,7 @@ class Pawn(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_valid_moves(self, board):
+    def get_valid_moves(self, board: Board) -> list[tuple[int, int]]:
         """
         Overrided function for special Pawn movement rules
         - Forward normally
@@ -146,7 +151,7 @@ class Queen(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_move_directions(self):
+    def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Diagonal or straight in any direction
         """
@@ -155,7 +160,7 @@ class Queen(ChessPiece):
             (1, 1), (1, -1), (-1, 1), (-1, -1)  # Bishop
         ]
 
-    def get_max_steps(self):
+    def get_max_steps(self) -> int:
         """
         Queen max movement: 8 (across board)
         """
@@ -174,7 +179,7 @@ class King(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_move_directions(self):
+    def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Up, down, left, right, diagonal
         """
@@ -183,7 +188,7 @@ class King(ChessPiece):
             (1, 1), (-1, 1), (1, -1), (-1, -1)
             ]
 
-    def get_max_steps(self):
+    def get_max_steps(self) -> int:
         return 1
 
 
@@ -199,7 +204,7 @@ class Bishop(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_move_directions(self):
+    def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Diagonal in any direction
         Bottom right, bottom left
@@ -207,7 +212,7 @@ class Bishop(ChessPiece):
         """
         return [(1, 1), (1, -1), (-1, 1), (-1, -1)]  # Diagonal
 
-    def get_max_steps(self):
+    def get_max_steps(self) -> int:
         """
         Max steps for Bishop
         """
@@ -226,7 +231,7 @@ class Knight(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_move_directions(self):
+    def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Knight moves in an L shape
         (2, 1) = Move down twice, then move right once (down 2, right 1)
@@ -234,13 +239,13 @@ class Knight(ChessPiece):
         return [(2, 1), (1, 2), (-1, 2), (-2, 1),
                 (-2, -1), (2, -1), (-1, -2), (1, -2)]
 
-    def get_max_steps(self):
+    def get_max_steps(self) -> int:
         """
         Max steps for Knight
         """
         return 4
 
-    def get_valid_moves(self, board):
+    def get_valid_moves(self, board: Board) -> list[tuple[int, int]]:
         """
         Special override to handle Knight movements
         """
@@ -270,13 +275,13 @@ class Rook(ChessPiece):
         super().__init__(name, color, row, col, unit_count_limit,
                          movement_count, movement_style)
 
-    def get_move_directions(self):
+    def get_move_directions(self) -> list[tuple[int, int]]:
         """
         Up, down, left, right
         """
         return [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
-    def get_max_steps(self):
+    def get_max_steps(self) -> int:
         """
         Max steps for Rook
         """
