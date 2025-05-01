@@ -1,0 +1,27 @@
+@startuml
+
+class BoardPiece{
+.... Getters ....
++ get_label(self): str
++ get_color(self): str
++ get_surprise(self): obj
++ is_piece_in_place(self): bool
+
+.... Setters ....
+ + set_label(self, label: str)
+ + set_color(self, color: str)
+ + set_surprise(self, surprise: obj)
+ + set_piece_in_place(self, in_place: bool)
+
+.... Methods ....
+ + __init__()
+
+____ Private Data ____
+ - string label
+ - string color
+ - object surprise
+ - bool piece_in_place
+
+}
+
+@enduml

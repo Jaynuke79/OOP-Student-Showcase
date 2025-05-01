@@ -1,0 +1,101 @@
+@startuml ChessPieces
+skinparam backgroundColor #eeeeee
+skinparam classAttriuteIconSize 0
+left to right direction
+
+abstract class ChessPiece {
+.... Getters ....
+ - name: string
+ - color: string
+ - max_steps: int
+ - valid_moves: list[tuple[int, int]]
+ - unit_count: int
+.... Setters ....
+ + name: string
+ + color: string
+
+.... Methods ....
+ + get_valid_moves(self, Board: obj): list[tuple[int, int]]
+ + get_move_directions(self): list[tuple[int, int]]
+ + freeze(self, turns: int)
+ + is_frozen(self): bool
+ + reduce_frozen(self)
+.... Class Methods ....
+ + get_unit_count(cls): int
+.... Overloaded Methods ....
+__init__(self..)
+.... Public Data ....
+ +bool promoted
+ +bool frozen
+ +int promotion_timer
+ +int frozen_time
+____ Private Data ____
+ -string name
+ -string color
+ -int row
+ -int col
+ -int unit_count_limit
+ -int movement_count
+ -string movement_style
+ -int _frozen_turns
+}
+
+
+' LEFT SIDE
+class Pawn {
+ + get_unit_count: int
+ + get_valid_moves(self, Board: obj): list[tuple[int, int]]
+ + unit_count: int
+}
+
+class Knight {
+ + get_unit_count: int
+ + __init__()
+ + get_valid_moves(Board: obj): list[tuple[int, int]]
+ + get_move_directions(self): list[tuple[int, int]]
+ + get_max_steps(self): int
+ + unit_count: int
+}
+
+class Rook {
+ + get_unit_count: int
+ + __init__()
+ + get_move_directions(self): list[tuple[int, int]]
+ + get_max_steps(self): int
+ + unit_count: int
+}
+
+' RIGHT SIDE
+class Queen {
+ + get_unit_count: int
+ + get_valid_moves(self, Board: obj): list[tuple[int, int]]
+ + get_move_directions(self): list[tuple[int, int]]
+ + get_max_steps(): int
+ + unit_count: int
+ + __init__()
+}
+
+class King {
+ + get_unit_count: int
+ + get_move_directions(self): list[tuple[int, int]]
+ + get_max_steps(self): int
+ +unit_count: int
+ + __init__
+}
+
+class Bishop {
+ + get_unit_count: int
+ + get_move_directions(self): list[tuple[int, int]]
+ + get_max_steps(self): int
+ + unit_count: int
+ + __init__
+}
+
+ChessPiece <|--- Pawn
+ChessPiece <|--- King
+ChessPiece <|--- Queen
+ChessPiece <|--- Bishop
+ChessPiece <|--- Knight
+ChessPiece <|--- Rook
+
+@enduml
