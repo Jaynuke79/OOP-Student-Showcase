@@ -1,19 +1,41 @@
-class ChessPiece {
+class ChessPiece(ABC) {
 .... Getters ....
 name: string
-unit_count_limit: int
-movement_count: int
-movement_style: string
+color: string
+max_steps: int
+valid_moves: list[tuple[int, int]]
+unit_count: int
+.... Setters ....
+name: string
 color: string
 
-.... Setters ....
 .... Methods ....
+get_valid_moves(self, Board: obj): list[tuple[int, int]]
+freeze(turns: int)
+is_frozen(): bool
+reduce_frozen()
+
+.... Class Methods ....
+get_unit_count: int
+
+.... Overloaded Methods ....
+__init__()
+
+.... Public Data ....
+ +bool promoted
+ +bool frozen
+ +int promotion_timer
+ +int frozen_time
+
 
 ____ Private Data ____
-string name
-int unit_count_limit
-string movement_style
-int movement_count
-string color
+ -string name
+ -string color
+ -int row
+ -int col
+ -int unit_count_limit
+ -int movement_count
+ -string movement_style
+ -int _frozen_turns
 
 }

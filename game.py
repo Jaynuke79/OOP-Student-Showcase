@@ -10,6 +10,7 @@ from board import Board
 sys.path.append(os.path.join(os.path.dirname(__file__), 'event_classes'))
 from promote_to_queen import PromoteToQueenEvent  # noqa: E402
 from freeze_piece import FreezePieceEvent  # noqa: E402
+from explosion import Explosion # noqa: E402
 
 
 def resource_path(relative_path: str) -> str:
