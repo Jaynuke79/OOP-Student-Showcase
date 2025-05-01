@@ -105,8 +105,6 @@ pieces = [Pawn("Pawn", "White", 1, 0, 8, 1, "forward"),
 
 ap: str = "assets/pieces/"
 ae: str = "assets/effects/"
-rss_path = resource_path
-pil = pygame.image.load
 
 
 def li(path: str) -> pygame.Surface:
@@ -139,6 +137,7 @@ piece_images = {
 pts = pygame.transform.scale  # shortened
 pil = pygame.image.load  # shortened
 pdr = pygame.draw.rect  # shortened
+rss_path = resource_path
 promotion_overlay = pil(rss_path(f"{ae}promotion_sparkle.png"))
 promotion_overlay = pts(promotion_overlay, (SQUARE_SIZE, SQUARE_SIZE))
 frozen_overlay = pil(rss_path(f"{ae}frozen.png"))
@@ -254,6 +253,9 @@ def draw_pieces() -> None:
 
 
 def draw_log() -> None:
+    """
+    Displays log of actions taken on bottom of screen
+    """
     y = BOARD_HEIGHT + 10
 
     for i, msg in enumerate(event_log[-3:]):
@@ -288,6 +290,10 @@ def draw_victory_screen() -> None:
 
 
 def play_turn() -> list[str]:
+    """
+    Plays turn when action such as space
+    bar pressed or piece is moved
+    """
     messages = []
 
     board = Board(pieces, ROWS, COLS)
