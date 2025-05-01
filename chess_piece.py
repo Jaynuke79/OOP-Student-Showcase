@@ -186,7 +186,7 @@ class King(ChessPiece):
         return [
             (1, 0), (-1, 0), (0, 1), (0, -1),
             (1, 1), (-1, 1), (1, -1), (-1, -1)
-            ]
+        ]
 
     def get_max_steps(self) -> int:
         return 1

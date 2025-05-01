@@ -15,8 +15,11 @@ class MockPiece(ChessPiece):
     Mock class for ChessPiece class
     for testing purposes
     """
-    def get_move_directions(self): return [(1, 0)]
-    def get_max_steps(self): return 1
+
+    def get_move_directions(self) -> list[tuple[int, int]]:
+        return [(1, 0)]
+
+    def get_max_steps(self) -> int: return 1
 
 
 class TestBoard(unittest.TestCase):

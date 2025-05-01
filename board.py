@@ -11,6 +11,7 @@ class Board:
     A class to manage BoardPieces and create a fully
     cohesive board for Chess Party
     """
+
     def __init__(self, pieces: list[ChessPiece],
                  rows: int = 8, cols: int = 8) -> None:
         """

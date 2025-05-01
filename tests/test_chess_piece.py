@@ -7,9 +7,8 @@ that adheres to the Chess rules are allowed, as intended
 
 import unittest
 from hypothesis import given
-from hypothesis.strategies import integers
 from hypothesis import strategies as st
-from chess_piece import ChessPiece, Pawn, Rook, Knight
+from chess_piece import Pawn, Rook, Knight
 from chess_piece import Bishop, King, Queen
 
 
@@ -41,7 +40,7 @@ class TestChessPiece(unittest.TestCase):
         self.assertEqual(self.bishop.get_max_steps(), 8)
         self.assertEqual(self.king.get_max_steps(), 1)
         self.assertEqual(self.queen.get_max_steps(), 8)
-    
+
     @given(freeze_turns=st.integers(min_value=1, max_value=10))
     def test_piece_frozen(self, freeze_turns: int) -> None:
         """
@@ -50,26 +49,25 @@ class TestChessPiece(unittest.TestCase):
         """
         for piece in [self.pawn, self.rook, self.knight,
                       self.bishop, self.queen, self.king]:
-                piece.freeze(freeze_turns)
+            piece.freeze(freeze_turns)
+            self.assertTrue(piece.is_frozen())
+
+            for _ in range(freeze_turns - 1):
+                piece.reduce_frozen()
                 self.assertTrue(piece.is_frozen())
 
-                for _ in range(freeze_turns - 1):
-                    piece.reduce_frozen()
-                    self.assertTrue(piece.is_frozen())
+            piece.reduce_frozen()
+            self.assertFalse(piece.is_frozen())
 
-                piece.reduce_frozen()
-                self.assertFalse(piece.is_frozen())
-
-        
     def test_unit_count(self) -> None:
         """
-        Test class unit_count 
+        Test class unit_count
         """
         # Start with 3 because of previous tests
         self.assertEqual(3, self.pawn.get_unit_count())
         self.pawn2 = Pawn("Test", "White", 2, 4, 1, 1, "line")
         self.assertEqual(4, self.pawn.get_unit_count())
-        
+
         self.assertEqual(3, self.rook.get_unit_count())
         self.rook2 = Rook("Test", "White", 2, 1, 1, 1, "line")
         self.assertEqual(4, self.rook.get_unit_count())
@@ -89,6 +87,7 @@ class TestChessPiece(unittest.TestCase):
         self.assertEqual(3, self.queen.get_unit_count())
         self.queen2 = Queen("Test", "Black", 3, 4, 1, 1, "line")
         self.assertEqual(4, self.queen.get_unit_count())
+
 
 if __name__ == "__main__":
     unittest.main()  # pragma: no cover

@@ -1,11 +1,14 @@
 # explosion.py
+from board import Board
+from chess_piece import ChessPiece
+
 
 class Explosion:
     """
     Explosions effect a 3x3 area centered at the given tile.
     """
 
-    def __init__(self, board):
+    def __init__(self, board: Board) -> None:
         """
         initialize the explosion manager with the board reference.
 
@@ -14,7 +17,8 @@ class Explosion:
         """
         self.board = board
 
-    def trigger(self, row, col, pieces):
+    def trigger(self, row: int, col: int,
+                pieces: list[ChessPiece]) -> list[ChessPiece]:
         """
         trigger an explosion centered at row, col. Any piece in the 3x3
         area around this tile is removed from the board
@@ -42,6 +46,7 @@ class Explosion:
             else:
                 # Remove piece from grid and board_state
                 self.board.grid[piece._row][piece._col] = None
-                self.board.board_state[piece._row][piece._col].set_piece_in_place(False)
+                bbs = self.board.board_state
+                bbs[piece._row][piece._col].set_piece_in_place(False)
 
         return new_pieces

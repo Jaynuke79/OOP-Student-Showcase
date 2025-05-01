@@ -1,5 +1,20 @@
 @startuml
 
+class Board{
+.... Methods ....
+ + __init__()
+ + update(self, pieces: list[ChessPiece])
+ + get_piece(self, row: int, col: int): Optional[ChessPiece]
+ + is_empty(self, row: int, col: int): bool
+ + get_tile(self, row: int, col: int): BoardPiece
+
+.... Public Data ....
+ + int rows
+ + int cols
+ + list[list[Optional[ChessPiece]]] grid
+ + list[list[BoardPiece]] board_state
+}
+
 class BoardPiece{
 .... Getters ....
 + get_label(self): str
@@ -23,5 +38,7 @@ ____ Private Data ____
  - bool piece_in_place
 
 }
+
+Board <|--- BoardPiece
 
 @enduml

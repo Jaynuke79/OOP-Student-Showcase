@@ -17,12 +17,13 @@ class TestBoardPiece(unittest.TestCase):
         Generate BoardPiece object
         """
 
-        self.obj = BoardPiece(":", ":", ":", ":")
+        self.obj = BoardPiece(":", ":", ":", True)
 
     """
     Below test functions are just for getters and setters
     as there are no regular functions in this class
     """
+
     def test_get_label(self) -> None:
         """ Simple test function for get label"""
         lbl: str = "this_is_a_label"
@@ -43,9 +44,9 @@ class TestBoardPiece(unittest.TestCase):
 
     def test_is_piece_in_place(self) -> None:
         """ Simple test function for get piece in place"""
-        pip: str = "yes"
+        pip: bool = True
         self.obj.set_piece_in_place(pip)
-        self.assertEqual(self.obj.is_piece_in_place(), "yes")
+        self.assertEqual(self.obj.is_piece_in_place(), True)
 
 
 if __name__ == "__main__":

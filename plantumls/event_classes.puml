@@ -1,0 +1,25 @@
+@startuml
+abstract class RandomEvent{
+ ___ Abstract Method ____
+ - apply(self, piece: ChessPiece, pieces:Optional[List[ChessPiece]]): str
+}
+
+class FreezePieceEvent{
+.... Methods ....
+ + __init__(self, turns: int)
+ + apply(...): str
+}
+
+class PromoteToQueenEvent{
+.... Methods ....
+ + __init__(self)
+ + apply(...): str
+
+____ Private Data ____
+ - queen_limit = 4
+}
+
+RandomEvent <|--- FreezePieceEvent
+RandomEvent <|--- PromoteToQueenEvent
+
+@enduml
