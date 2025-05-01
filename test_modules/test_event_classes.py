@@ -8,7 +8,6 @@ from event_classes.freeze_piece import FreezePieceEvent
 from event_classes.promote_to_queen import PromoteToQueenEvent
 from board import Board
 from chess_piece import ChessPiece
-from board import Board
 from chess_piece import Pawn, Queen
 
 
