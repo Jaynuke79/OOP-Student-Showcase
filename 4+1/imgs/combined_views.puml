@@ -1,0 +1,12 @@
+!include logical_view.puml
+!include development_view.puml
+!include process_view.puml
+!include physical_view.puml
+!include scenario_view.puml
+
+@startuml
+logical_view -> development_view : includes
+development_view -> process_view : includes
+process_view -> physical_view : includes
+physical_view -> scenario_view : includes
+@enduml

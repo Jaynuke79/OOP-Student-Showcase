@@ -1,0 +1,13 @@
+@startuml
+title Process View - Runtime Behavior
+
+actor Player
+participant GUI
+participant GameEngine
+participant EventSystem
+
+Player -> GUI : Make Move
+GUI -> GameEngine : Validate and Apply Move
+GameEngine -> EventSystem : Check for Random Event
+EventSystem -> GUI : Update Board with Effect
+@enduml

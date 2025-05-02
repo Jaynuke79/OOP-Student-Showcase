@@ -1,0 +1,15 @@
+@startuml
+title Physical View - Deployment Architecture
+
+node "Player PC" {
+  [Python Runtime]
+  [Pygame GUI]
+  [Core Modules]
+}
+
+[Python Runtime] --> [Pygame GUI]
+[Python Runtime] --> [Core Modules]
+
+database "AI Engine (Planned)" as AI
+[Python Runtime] --> AI : Optional
+@enduml

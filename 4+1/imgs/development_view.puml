@@ -1,0 +1,18 @@
+@startuml
+title Development View - Module Dependencies
+
+package "Module Structure" {
+  [chess_piece.py]
+  [base_random_event.py]
+  [freeze_piece.py]
+  [promote_to_queen.py]
+  [board_piece.py]
+}
+
+[chess_piece.py] --> [base_random_event.py]
+[freeze_piece.py] --> [base_random_event.py]
+[promote_to_queen.py] --> [base_random_event.py]
+[freeze_piece.py] --> [chess_piece.py]
+[promote_to_queen.py] --> [chess_piece.py]
+[board_piece.py] --> [base_random_event.py]
+@enduml

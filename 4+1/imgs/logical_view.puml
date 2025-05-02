@@ -1,0 +1,50 @@
+@startuml
+title Logical View - Class Relationships
+
+abstract class ChessPiece {
+  + get_name()
+  + get_color()
+  + get_valid_moves()
+  + freeze()
+  + is_frozen()
+  + get_move_directions()
+  + get_max_steps()
+}
+
+class Pawn
+class Queen
+class King
+class Bishop
+class Knight
+class Rook
+
+ChessPiece <|-- Pawn
+ChessPiece <|-- Queen
+ChessPiece <|-- King
+ChessPiece <|-- Bishop
+ChessPiece <|-- Knight
+ChessPiece <|-- Rook
+
+class BoardPiece {
+  - _label
+  - _color
+  - _surprise : RandomEvent
+  - _piece_in_place
+}
+
+abstract class RandomEvent {
+  + apply(piece)
+}
+
+class FreezePieceEvent {
+  + apply(piece)
+}
+
+class PromoteToQueenEvent {
+  + apply(piece, pieces)
+}
+
+RandomEvent <|-- FreezePieceEvent
+RandomEvent <|-- PromoteToQueenEvent
+BoardPiece --> RandomEvent : surprise
+@enduml

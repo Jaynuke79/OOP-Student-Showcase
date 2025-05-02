@@ -1,0 +1,16 @@
+@startuml
+title Scenario View (+1) - Use Case: Move Triggers Event
+
+actor User
+participant GUI
+participant GameEngine
+participant Board
+participant EventManager
+
+User -> GUI : Clicks piece and target square
+GUI -> GameEngine : send_move(source, target)
+GameEngine -> Board : move_piece()
+GameEngine -> EventManager : roll_event()
+EventManager -> Board : apply_effect()
+Board -> GUI : redraw()
+@enduml
