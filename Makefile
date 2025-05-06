@@ -4,18 +4,11 @@ TEST_ARGS = -s --verbose --color=yes
 TYPE_CHECK = mypy --strict --allow-untyped-decorators --ignore-missing-imports
 STYLE_CHECK = flake8
 STYLE_FIX = autopep8 --in-place --recursive --aggressive --aggressive .
-<<<<<<<<< Temporary merge branch 1
-COVERAGE = python -m pytest
-
-.PHONY: all
-all: check-style check-type fix-style run-test-coverage clean
-=========
 COVERAGE = python3 -m pytest --cov-config=.coveragerc
 DOCS = ./docs
 
 .PHONY: all
 all: check-style check-type fix-style run-test-coverage create-uml clean
->>>>>>>>> Temporary merge branch 2
 	@echo "All checks passed"
 
 .PHONY: check-type
@@ -39,9 +32,6 @@ run-test:
 
 .PHONY: run-test-coverage
 run-test-coverage:
-<<<<<<<<< Temporary merge branch 1
-	$(COVERAGE) -v --cov-report=html:. --cov-report=term --cov=. .
-=========
 	$(COVERAGE) -v --cov=. --cov-report=html:$(DOCS)/py-cov --cov-report=term .
 
 .PHONY: create-cov-report
@@ -68,7 +58,6 @@ endif
 	$(PLANTUML) plantumls/event_classes.puml
 	$(PLANTUML) plantumls/pieceClasses.puml
 	@echo "UML diagrams created and saved in uml folder"
->>>>>>>>> Temporary merge branch 2
 
 .PHONY: clean
 clean:
