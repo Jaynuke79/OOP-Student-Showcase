@@ -1,9 +1,10 @@
 # BoardPiece class
 class BoardPiece:
-    def __init__(self, label: str, color: str, surprise: object, piece_in_place: bool):
+    def __init__(self, label: str, color: str,
+                 surprise: object, piece_in_place: bool):
         self._label = label
         self._color = color
-        self._surprise = surprise  # can be any object representing the 'surprise'
+        self._surprise = surprise
         self._piece_in_place = piece_in_place
 
     # Getters
@@ -20,14 +21,14 @@ class BoardPiece:
         return self._piece_in_place
 
     # Setters
-    def set_label(self, label: str):
+    def set_label(self, label: str) -> None:
         self._label = label
 
-    def set_color(self, color: str):
+    def set_color(self, color: str) -> None:
         self._color = color
 
-    def set_surprise(self, surprise: object):
+    def set_surprise(self, surprise: object) -> None:
         self._surprise = surprise
 
-    def set_piece_in_place(self, in_place: bool):
+    def set_piece_in_place(self, in_place: bool) -> None:
         self._piece_in_place = in_place
