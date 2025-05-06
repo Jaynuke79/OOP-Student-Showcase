@@ -2,6 +2,7 @@ import sys
 import os
 from typing import cast
 import pygame
+from pygame.surface import Surface
 import random
 from chess_piece import Pawn, Rook, Knight
 from chess_piece import ChessPiece, Bishop, King, Queen
@@ -107,7 +108,7 @@ ap: str = "assets/pieces/"
 ae: str = "assets/effects/"
 
 
-def li(path: str) -> pygame.Surface:
+def li(path: str) -> Surface:
     """
     Helper function for loading images
     """
