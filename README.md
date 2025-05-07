@@ -34,3 +34,8 @@ On a Windows machine in VSCode:
 1. Navigate to CHESSPARTY directory in WSL or VSCode
 2. a. In WSL: run 'make all' and all tests + formatting commands will run with results recorded in your terminal
 2. b. In VSCode: Open new terminal using CTRL + SHIFT + ' and run 'make all'
+
+## Github
+![Alt text](/Screenshots/GitHub/github_1.png?raw=true)
+
+## Discord
