@@ -39,3 +39,6 @@ On a Windows machine in VSCode:
 ![Alt text](/Screenshots/GitHub/github_1.png?raw=true)
 
 ## Discord
+We utilized Discord for communications, such as who is responsible for what, when we are meeting, what we should do for different aspects of the project, and more.
+![Alt text](/Screenshots/Discord/Discord_comms1.png?raw=true)
+![Alt text](/Screenshots/Discord/Discord_comms2.png?raw=true)
