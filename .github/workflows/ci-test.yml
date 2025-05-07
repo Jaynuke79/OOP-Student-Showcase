@@ -41,4 +41,4 @@ jobs:
           mypy --strict --allow-untyped-decorators --ignore-missing-imports . 
       - name: Test with pytest
         run: |
-          pytest --verbose demo-assignments/A0/hello/tests
+          pytest --verbose CHESSPARTY/tests
