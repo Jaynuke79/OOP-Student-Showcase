@@ -31,3 +31,6 @@ On a Windows machine in VSCode:
 4. Extract to wherever and run .exe file accompanied by pawn.ico icon
 
 ## How to Test
+1. Navigate to CHESSPARTY directory in WSL or VSCode
+2. a. In WSL: run 'make all' and all tests + formatting commands will run with results recorded in your terminal
+2. b. In VSCode: Open new terminal using CTRL + SHIFT + ' and run 'make all'
