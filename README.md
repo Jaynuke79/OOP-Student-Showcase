@@ -37,6 +37,7 @@ On a Windows machine in VSCode:
 
 ## Github
 ![Alt text](/Screenshots/GitHub/github_1.png?raw=true)
+![Alt text](/Screenshots/GitHub/github_CICD_fixes.png?raw=true)
 
 ## Discord
 We utilized Discord for communications, such as who is responsible for what, when we are meeting, what we should do for different aspects of the project, and more.
